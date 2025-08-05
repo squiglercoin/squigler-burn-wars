@@ -30,6 +30,17 @@
         td {
             background-color: #222;
         }
+        .burner {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .burner img {
+            width: 40px;
+            height: 40px;
+            border-radius: 5px;
+            border: 1px solid #444;
+        }
         .winner-logo {
             margin-top: 30px;
         }
@@ -49,15 +60,30 @@
         <thead>
             <tr>
                 <th>Rank</th>
-                <th>Wallet</th>
+                <th>Burner</th>
                 <th>$SQUIG Burned</th>
                 <th>Time</th>
             </tr>
         </thead>
         <tbody id="leaderboard">
-            <tr><td>1</td><td>0xAbC...123</td><td>1,234,567</td><td>3h ago</td></tr>
-            <tr><td>2</td><td>0xXyZ...987</td><td>890,000</td><td>5h ago</td></tr>
-            <tr><td>3</td><td>0x123...456</td><td>456,000</td><td>8h ago</td></tr>
+            <tr>
+                <td>1</td>
+                <td class="burner"><img src="https://i.imgur.com/6Xg7LvN.png" alt="PFP1">0xAbC...123</td>
+                <td>1,234,567</td>
+                <td>3h ago</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td class="burner"><img src="https://i.imgur.com/qR5ZUMT.png" alt="PFP2">0xXyZ...987</td>
+                <td>890,000</td>
+                <td>5h ago</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td class="burner"><img src="https://i.imgur.com/g3z1FXD.png" alt="PFP3">0x123...456</td>
+                <td>456,000</td>
+                <td>8h ago</td>
+            </tr>
         </tbody>
     </table>
 
