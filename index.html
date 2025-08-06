@@ -1,96 +1,138 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Squigler Burn Wars 🔥</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #111;
-            color: #f0f0f0;
-            text-align: center;
-            padding: 20px;
-        }
-        h1 {
-            color: #ffcc00;
-        }
-        table {
-            width: 90%;
-            margin: 20px auto;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 10px;
-            border: 1px solid #444;
-        }
-        th {
-            background-color: #333;
-        }
-        td {
-            background-color: #222;
-        }
-        .burner {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .burner img {
-            width: 40px;
-            height: 40px;
-            border-radius: 5px;
-            border: 1px solid #444;
-        }
-        .winner-logo {
-            margin-top: 30px;
-        }
-        .winner-logo img {
-            max-width: 200px;
-            border-radius: 10px;
-            border: 2px solid #ffcc00;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Squigler Burn War Leaderboard</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #000;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2.5em;
+      color: #FFD700;
+      margin-bottom: 10px;
+    }
+    p {
+      color: #ccc;
+      font-size: 16px;
+    }
+    .instructions {
+      margin: 20px auto;
+      max-width: 700px;
+      background: #111;
+      padding: 15px;
+      border: 1px solid #FFD700;
+      border-radius: 10px;
+    }
+    .total-burned {
+      font-size: 20px;
+      margin: 20px 0;
+      color: #FFD700;
+    }
+    table {
+      margin: auto;
+      width: 90%;
+      border-collapse: collapse;
+      background: #111;
+      box-shadow: 0 0 10px #FFD700;
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid #333;
+    }
+    th {
+      background: #222;
+      color: #FFD700;
+    }
+    tr:nth-child(even) {
+      background: #1a1a1a;
+    }
+    .loading {
+      margin-top: 20px;
+      color: #aaa;
+    }
+    .refresh-button {
+      margin: 20px auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #FFD700;
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-    <h1>Squigler Burn Wars 🔥</h1>
-    <p>Burn the most $SQUIG this week. Win the right to change the coin's logo.</p>
+  <h1>🔥 Squigler Burn War 🔥</h1>
+  <p class="total-burned" id="totalBurned">Total Burned: Loading...</p>
 
-    <h2>🔥 Weekly Burn Leaderboard 🔥</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Rank</th>
-                <th>Burner</th>
-                <th>$SQUIG Burned</th>
-                <th>Time</th>
-            </tr>
-        </thead>
-        <tbody id="leaderboard">
-            <tr>
-                <td>1</td>
-                <td class="burner"><img src="https://i.imgur.com/6Xg7LvN.png" alt="PFP1">0xAbC...123</td>
-                <td>1,234,567</td>
-                <td>3h ago</td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td class="burner"><img src="https://i.imgur.com/qR5ZUMT.png" alt="PFP2">0xXyZ...987</td>
-                <td>890,000</td>
-                <td>5h ago</td>
-            </tr>
-            <tr>
-                <td>3</td>
-                <td class="burner"><img src="https://i.imgur.com/g3z1FXD.png" alt="PFP3">0x123...456</td>
-                <td>456,000</td>
-                <td>8h ago</td>
-            </tr>
-        </tbody>
-    </table>
+  <div class="instructions">
+    <h3>🪙 How to Join the Burn War</h3>
+    <p>Send $SQUIG tokens to the Ethereum burn address:</p>
+    <p style="color: #FFD700;"><strong>0x0000000000000000000000000000000000000000</strong></p>
+    <p>The top burner each week gets to change the Squigler token profile pic for 7 days!</p>
+  </div>
 
-    <div class="winner-logo">
-        <h2>🏆 Current Winning Logo 🏆</h2>
-        <img src="winner-logo.png" alt="Winning Logo">
-        <p>Submitted by: <strong>Top Burner Wallet</strong></p>
-    </div>
+  <button class="refresh-button" onclick="fetchBurnData()">🔁 Refresh Leaderboard</button>
+
+  <div id="leaderboard" class="loading">Loading burn data from Etherscan...</div>
+
+  <script>
+    const API_KEY = 'K7RKWGMREXSRN91TD6S2QA2MGX46MNPUFP';
+    const TOKEN_ADDRESS = '0x904DC6D841265dD5B01A0D09D10e2808eba61200';
+    const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+
+    async function fetchBurnData() {
+      document.getElementById('leaderboard').innerHTML = 'Loading burn data from Etherscan...';
+      document.getElementById('totalBurned').innerText = 'Total Burned: Loading...';
+      try {
+        const response = await fetch(`https://api.etherscan.io/api?module=account&action=tokentx&contractaddress=${TOKEN_ADDRESS}&address=${ZERO_ADDRESS}&page=1&offset=100&sort=desc&apikey=${API_KEY}`);
+        const data = await response.json();
+
+        if (!data.result || data.result.length === 0) {
+          document.getElementById('leaderboard').innerHTML = 'No burn data found.';
+          return;
+        }
+
+        const burns = {};
+        let totalBurned = 0;
+
+        data.result.forEach(tx => {
+          if (tx.to.toLowerCase() === ZERO_ADDRESS) {
+            const from = tx.from.toLowerCase();
+            const txHash = tx.hash;
+            const amount = parseFloat(tx.value) / (10 ** parseInt(tx.tokenDecimal));
+            totalBurned += amount;
+            if (!burns[from]) burns[from] = { total: 0, txs: [] };
+            burns[from].total += amount;
+            burns[from].txs.push(txHash);
+          }
+        });
+
+        const sorted = Object.entries(burns).sort((a, b) => b[1].total - a[1].total);
+        let html = `<table><thead><tr><th>Rank</th><th>Burner</th><th>Amount Burned</th><th>Tx Links</th></tr></thead><tbody>`;
+
+        sorted.forEach(([addr, data], i) => {
+          const links = data.txs.map(tx => `<a href="https://etherscan.io/tx/${tx}" target="_blank">🔗</a>`).join(" ");
+          html += `<tr><td>#${i + 1}</td><td>${addr.slice(0, 6)}...${addr.slice(-4)}</td><td>${data.total.toFixed(2)} SQUIG</td><td>${links}</td></tr>`;
+        });
+        html += `</tbody></table>`;
+
+        document.getElementById('leaderboard').innerHTML = html;
+        document.getElementById('totalBurned').innerText = `🔥 Total Burned: ${totalBurned.toFixed(2)} SQUIG`;
+      } catch (err) {
+        document.getElementById('leaderboard').innerHTML = 'Error fetching burn data.';
+        console.error(err);
+      }
+    }
+
+    fetchBurnData();
+  </script>
 </body>
 </html>
